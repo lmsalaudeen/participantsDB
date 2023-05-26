@@ -2,21 +2,21 @@
 
 My idea for this was to create a sort of patient information database. For example, if you want to conduct a study and collect data about patients in your study. The mock database contains five tables:
 
-| Table Name               | Columns                                                                        |
-|--------------------------|--------------------------------------------------------------------------------|
-| personal_info            | ID, first_name, last_name, age, phone, email, address (house no, street, town, |
-| physical_characteristics | ID, height, weight, gender, race, BMI                                          |
-| biochemical              | ID, blood_pressure, ldl, hdl, triglyceradehyde                                 |
-| comorbidities            | ID, heart_disease, retinopathy, metabolic, skin                                |
-| meds                     | ID, dietary_supplement, anti-depressant, contraceptive, anti-hypertensive      |
+| Table Name               | Columns                                                                                     |
+|--------------------------|----------------------------------------------|
+| personal_info            | **ID**, first_name, last_name, age, phone, email, address (house no, street, town, country) |
+| physical_characteristics | **ID**, height, weight, gender, race, *BMI*                                                 |
+| biochemical              | **ID**, blood_pressure, ldl, hdl, triglyceradehyde                                          |
+| comorbidities            | **ID**, heart_disease, retinopathy, metabolic, skin                                         |
+| meds                     | **ID**, dietary_supplement, anti-depressant, contraceptive, anti-hypertensive               |
 
-ID is the primary key and creates relations between the tables. The DB diagram
+ID is the primary key and creates relations between the tables. The database diagram is below:
 
 ![Participants Database EER Diagram](EERdiagram_participantsDB.jpeg)
 
 ## Creating a view
 
-I created a view (participant_common) to show the age, sex and comorbidities. This fetches data from three tables: age (personal_info table), sex (physical_characteristics table) and comorbidities (comorbidities table):
+I created a view (participants_common) to show the age, sex and comorbidities. This fetches data from three tables: age (personal_info table), sex (physical_characteristics table) and comorbidities (comorbidities table):
 
 ``` sql
 CREATE VIEW participants_common AS
@@ -29,7 +29,7 @@ INNER JOIN physical_characteristics physical ON c.ID = physical.ID
 INNER JOIN personal_info personal ON c.ID = personal.ID
 ```
 
-## Creating a stored function
+## Creating a Stored Function
 
 One of the metrics which can be inferred from the weight and height of participants is their body mass index (BMI). Hence, I created a stored function which calculates the BMI using weight and height in the physical_characteristics table.
 
@@ -45,7 +45,11 @@ END//
 DELIMITER ;
 ```
 
--- call the function select height, weight, ID, bmi_calc(weight,height) BMI from physical_characteristics;
+-- call the function
+
+``` sql
+SELECT height, weight, ID, bmi_calc(weight,height) BMI from physical_characteristics;
+```
 
 ## Creating a Stored Procedure
 
@@ -65,6 +69,7 @@ IN `street` VARCHAR(50),
 IN `city` VARCHAR(25),
 IN `post_code` VARCHAR(10),
 IN `country` VARCHAR(20))
+
 BEGIN
 INSERT INTO
 personal_info(ID,first_name,last_name,age,phone,email,house_no,street,city,post_code,country)
@@ -145,7 +150,7 @@ END//
 DELIMITER ;
 ```
 
-To test the trigger, I inserted a new entry using the newEntry procedure defined earlier.
+To test the trigger, I inserted a new entry using the `newEntry` procedure defined earlier.
 
 ``` sql
 -- Testing the newEntry trigger
@@ -169,7 +174,7 @@ SELECT* from personal_info;
 
 ## Creating a view with a result set for analysis
 
-Suppose you are a researcher collecting and storing information about patients, and you want to send your data to your data analyst or bioinformatician to analyse. The onus falls on you to remove identifiable information of the patients. So I created a view called participants_dataAnalyst to include all the patient data without identifiable information. Since the database also now has a calculated bmi column, I left out the height and weight column.
+Suppose you are a researcher collecting and storing information about patients, and you want to send your data to your data analyst or bioinformatician to analyse. The onus is on you to remove identifiable information of the patients. So I created a view called participants_dataAnalyst to include all the patient data without identifiable information. Since the database also now has a calculated bmi column, I left out the height and weight column.
 
 ``` sql
 -- A view to merge all tables but hide identifiable info
