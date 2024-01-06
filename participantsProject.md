@@ -1,6 +1,8 @@
-# CFG Introduction to Data and SQL Project
+# A mock database for storing patient information 
 
-My idea for this was to create a sort of patient information database. For example, if you want to conduct a study and collect data about patients in your study. The mock database contains five tables:
+This project was done as part of the requirements for the CFG Introduction to Data and SQL KickStarter Course.
+
+My idea for this was to create a patient information database. For example, if you want to conduct a study and collect data about patients in your study. The mock database contains five tables:
 
 | Table Name               | Columns                                                                                     |
 |--------------------------|----------------------------------------------|
